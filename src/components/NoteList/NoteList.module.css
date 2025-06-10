@@ -74,4 +74,17 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  .message {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 auto;
+    color: #0d6efd;
+  }
   
+  .error {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 auto;
+    color: #dc3545;
+  }

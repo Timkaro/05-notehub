@@ -1,16 +1,9 @@
-export type TagType = 'Todo' | 'Work' | 'Personal' | 'Meeting' | 'Shopping';
-
 export interface Note {
-    id: string;
+    id: number;
     title: string;
-    content?: string;
+    content: string;
     createdAt: string;
     updatedAt: string;
-    tag: TagType;   
+    tag: 'Todo' | 'Work' | 'Personal' | 'Meeting' | 'Shopping';
 }
 
-export interface CreateNote {
-  title: string;
-  content: string;
-  tag: TagType;
-}

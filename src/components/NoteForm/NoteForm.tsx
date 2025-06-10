@@ -1,10 +1,15 @@
 import { useId } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Formik, Field, Form, ErrorMessage, type FormikHelpers } from 'formik';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import type { CreateNote } from '../../types/note';
 import { createNote } from '../../services/noteService';
 import css from './NoteForm.module.css'
+
+interface CreateNote {
+  title: string;
+  content: string;
+  tag: 'Todo' | 'Work' | 'Personal' | 'Meeting' | 'Shopping';
+}
 
 const initialValues: CreateNote = {
     title: '',
@@ -12,31 +17,7 @@ const initialValues: CreateNote = {
     tag: 'Todo',
 };
 
-interface NoteFormProps {
-  onClose: () => void;
-}
-
-export default function NoteForm({onClose}: NoteFormProps) {
-const fieldId = useId();
-const queryClient = useQueryClient();
-
-const handleSubmit = (
-  values: CreateNote,
-  actions: FormikHelpers<CreateNote>
-) => {
-  mutate(values);
- actions.resetForm();
-};
-
-const { mutate } = useMutation({
-    mutationFn: (values: CreateNote) => createNote(values),
-    onSuccess: () => {
-      onClose();
-      queryClient.invalidateQueries({queryKey: ["notes"]});      
-    }
-	});
-
-  const validationSchema = Yup.object({
+const validationSchema = Yup.object({
   title: Yup.string()
     .min(3, 'Title must be at least 3 characters')
     .max(50, 'Title must not exceed 50 characters')
@@ -48,6 +29,29 @@ const { mutate } = useMutation({
     .required("Tag is required"),
 });
 
+interface NoteFormProps {
+  onClose: () => void;
+}
+
+export default function NoteForm({onClose}: NoteFormProps) {
+const fieldId = useId();
+const queryClient = useQueryClient();
+
+const { mutate, isPending } = useMutation({
+    mutationFn: (values: CreateNote) => createNote(values),
+    onSuccess: () => {
+      onClose();
+      queryClient.invalidateQueries({queryKey: ["notes"]});      
+    }
+	});
+
+const handleSubmit = (
+  values: CreateNote,
+) => {
+  mutate(values);
+};
+
+  
 return (
 <Formik
 initialValues={initialValues}
@@ -91,9 +95,9 @@ onSubmit={handleSubmit}>
       <button
         type="submit"
         className={css.submitButton}   
-        disabled={false}   
+        disabled={isPending}   
       >
-        Create note        
+        {isPending ? "Creating..." : "Create note"}        
       </button>
     </div>
   </Form>
