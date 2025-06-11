@@ -1,4 +1,4 @@
-import type { Note } from "../types/note";
+import type { Note, CreateNote } from "../types/note";
 import axios from "axios";
 
 const API_URL = 'https://notehub-public.goit.study/api/notes';
@@ -10,12 +10,6 @@ const axiosInstance = axios.create({
     Authorization: `Bearer ${token}`,
   },
 });
-
-interface CreateNote {
-  title: string;
-  content: string;
-  tag: 'Todo' | 'Work' | 'Personal' | 'Meeting' | 'Shopping';
-}
 
 interface FetchNotes {
     notes: Note[];
@@ -29,12 +23,13 @@ interface FetchParams {
 
  export async function fetchNotes(  
   searchText: string,
-  page: number
+  page: number,
+  perPage: number = 12
 ): Promise<FetchNotes> {
    const params: FetchParams = {
     ...(searchText.trim() !== "" && {search: searchText.trim()}),
     page,
-    perPage: 12,
+    perPage,
   };
 
   const res = await axiosInstance.get<FetchNotes>("/", { params });

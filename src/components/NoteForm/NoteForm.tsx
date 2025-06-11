@@ -2,14 +2,9 @@ import { useId } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import type { CreateNote } from "../../types/note";
 import { createNote } from '../../services/noteService';
 import css from './NoteForm.module.css'
-
-interface CreateNote {
-  title: string;
-  content: string;
-  tag: 'Todo' | 'Work' | 'Personal' | 'Meeting' | 'Shopping';
-}
 
 const initialValues: CreateNote = {
     title: '',
@@ -45,10 +40,17 @@ const { mutate, isPending } = useMutation({
     }
 	});
 
-const handleSubmit = (
-  values: CreateNote,
-) => {
-  mutate(values);
+const handleSubmit = ( values: CreateNote ) => {
+  mutate(values, {
+    onSuccess: () => {
+      onClose();
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+    },
+    onError: (error) => {
+      console.error("Failed to create note:", error);
+      alert("Failed to create note. Please try again.");
+    },
+  });
 };
 
   

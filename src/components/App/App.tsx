@@ -30,8 +30,7 @@ export default function App() {
 
   return (
     <div className={css.app}>
-      {notes.isLoading && <p>Loading...</p>}
-
+      
       <header className={css.toolbar}>
         <SearchBox value={searchText} onSearch={handleSearchChange} />
         {totalPages > 1 && (
@@ -41,13 +40,21 @@ export default function App() {
             onPageChange={(page: number) => setCurrentPage(page)}
           />
         )}
-        <button className={css.button} onClick={() => setIsModalOpen(true)}>
+        <button 
+        className={css.button} 
+        onClick={() => setIsModalOpen(true)}
+        disabled={isModalOpen}
+        >
           Create note +
         </button>
       </header>
 
-      <NoteList notes={notes.data?.notes ?? []}/>
+      {notes.isLoading && <p>Loading...</p>} 
       {notes.isError && <p>Error loading notes.</p>}
+      {!notes.isLoading && !notes.isError && (
+        <NoteList notes={notes.data?.notes ?? []}/>
+      )}
+      
       {isModalOpen && (
         <NoteModal 
         onClose={() => setIsModalOpen(false)}/>      
